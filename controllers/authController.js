@@ -4,7 +4,6 @@ function register(req, res) {
   // Implement registration
   // Validate user inputs
   // Hash the user's password before storing it in the database.
-  // try to implement email verification to ensure that the user's email address is valid.
   // insert the user's information into the database after validation
   // Implement error handling to provide meaningful error messages to users in case of validation failures
 }

@@ -43,12 +43,10 @@ app.get("/", (req, res) => {
 const auth = require('./routes/authRoutes');
 const product = require('./routes/productRoutes');
 const order = require('./routes/orderRoutes');
-const admin = require('./routes/adminRoutes');
 
 app.use('/auth', auth);
 app.use('/products', product);
 app.use('/orders', order);
-app.use('/admin', admin);
 
 // Server listening
 const PORT = process.env.PORT || 4000;
