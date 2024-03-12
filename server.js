@@ -1,6 +1,17 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
+const mongoose = require('mongoose');
+dotenv.config({ path: "config/config.env" });
+
+mongoose.connect(process.env.MONGO_URI).then((conn) => {
+    console.log(`Database connected: ${conn.connection.host}`);
+  })
+  .catch((err) => {
+    console.error(`Database error: ${err}`);
+    process.exit(1);
+  });
+
 const accessLogger = require('./middleware/accessLogging');
 const errorLogger = require('./middleware/errorLogging');
 
