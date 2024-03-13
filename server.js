@@ -1,20 +1,13 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
-const mongoose = require('mongoose');
+const dbConnection = require("./config/database");
+const accessLogger = require("./middleware/accessLogging");
+const errorLogger = require("./middleware/errorLogging");
 dotenv.config({ path: "config/config.env" });
 
-mongoose.connect(process.env.MONGO_URI).then((conn) => {
-    console.log(`Database connected: ${conn.connection.host}`);
-  })
-  .catch((err) => {
-    console.error(`Database error: ${err}`);
-    process.exit(1);
-  });
-
-const accessLogger = require('./middleware/accessLogging');
-const errorLogger = require('./middleware/errorLogging');
-
+// connect with DB
+dbConnection();
 
 // Load environment variables
 dotenv.config({ path: "config/config.env" });
@@ -34,19 +27,19 @@ app.use(errorLogger);
 // Middleware
 app.use(express.json());
 
-// Test
+// Test 
 app.get("/", (req, res) => {
   res.send("our API v3");
 });
 
 // Routes
-const auth = require('./routes/authRoutes');
-const product = require('./routes/productRoutes');
-const order = require('./routes/orderRoutes');
+const auth = require("./routes/authRoutes");
+const product = require("./routes/productRoutes");
+const order = require("./routes/orderRoutes");
 
-app.use('/auth', auth);
-app.use('/products', product);
-app.use('/orders', order);
+app.use("/auth", auth);
+app.use("/products", product);
+app.use("/orders", order);
 
 // Server listening
 const PORT = process.env.PORT || 4000;
