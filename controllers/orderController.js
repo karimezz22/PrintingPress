@@ -28,9 +28,6 @@ function deleteOrder(req, res) {
   // Implement logic to delete an order
 }
 
-function changeOrderStatus(req, res) {
-  // Implement to change the status of an order
-}
 
 function acceptOrder(req, res) {
   //  Implement to accepting an order
@@ -42,15 +39,19 @@ function denyOrder(req, res) {
   // Delete this the order
 }
 
+function changeOrderStatus(req, res) {
+  // Implement to change the status of an order
+}
+
 module.exports = {
-  createOrder,
-  getAllAcceptedOrders,
-  getOrderById,
   getAllOrders,
+  getAllAcceptedOrders,
+  getOrderHistory,
+  getOrderById,
+  createOrder,
   updateOrder,
   deleteOrder,
-  getOrderHistory,
-  changeOrderStatus,
   acceptOrder,
-  denyOrder
+  denyOrder,
+  changeOrderStatus
 };

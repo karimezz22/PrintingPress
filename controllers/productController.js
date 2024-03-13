@@ -8,7 +8,7 @@ function getProductById(req, res) {
   // Implement to get a product by ID
 }
 
-function AddProduct(req, res) {
+function createProduct(req, res) {
   // Implement to create product
   // Validate user inputs
   // Insert product information to the database
@@ -16,7 +16,7 @@ function AddProduct(req, res) {
   // Return a response to the client indicating success
 }
 
-function UpdateProduct(req, res) {
+function updateProduct(req, res) {
   // Implement to update product
   // Validate user inputs
   // Update product information in the database
@@ -24,7 +24,7 @@ function UpdateProduct(req, res) {
   // Return a response to the client indicating success or failure
 }
 
-function DeleteProduct(req, res) {
+function deleteProduct(req, res) {
   // Implement to delete product
   // Validate user inputs (e.g., product ID)
   // Delete product from the database
@@ -39,8 +39,8 @@ function searchProducts(req, res) {
 module.exports = {
   getAllProducts,
   getProductById,
-  AddProduct,
-  UpdateProduct,
-  DeleteProduct,
+  createProduct,
+  updateProduct,
+  deleteProduct,
   searchProducts,
 };
