@@ -1,16 +1,17 @@
+//models/user.js
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const { hashPassword } = require("./dbMethods/userMethods");
 
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, "Username is required."],
     minlength: [4, "Username must be at least 4 characters long."],
-    maxlength: [20, "Username cannot exceed 20 characters."],
-    unique: true
+    maxlength: [20, "Username cannot exceed 20 characters."]
   },
   password: {
     type: String,
+    index: true,
     required: [true, "Password is required."],
     minlength: [6, "Password must be at least 6 characters long."]
   },
@@ -28,16 +29,37 @@ const userSchema = new Schema({
   phoneNumber: {
     type: String,
     required: [true, "Phone number is required."],
-    match: [/^\d{10}$/, "Please enter a valid 10-digit phone number."]
+    match: [/^((\+|00)20|0)?1[0-2,5]\d{8}$/, "Please enter a valid phone number."]
   },
   role: {
     type: String,
     enum: ["user", "admin"],
     default: "user"
-  }
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    default: null,
+  },
 },
 {
   timestamps: true
+});
+
+// Hash password before saving
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+  try {
+    this.password = await hashPassword(this.password);
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 const UserModel = mongoose.model("User", userSchema);

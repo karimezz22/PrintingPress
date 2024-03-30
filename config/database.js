@@ -1,3 +1,4 @@
+//config/database.js
 //Database connection
 const mongoose = require('mongoose');
 

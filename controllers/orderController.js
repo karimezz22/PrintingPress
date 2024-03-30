@@ -1,47 +1,87 @@
-// Controller for order processing
+//controllers/orderController.js
+const OrderModel = require("../models/order");
 
-function getAllOrders(req, res) {
-  // Implement to get all orders which accepted is false
-}
+const getAllOrders = async (req, res, next) => {
+  try {
+    // Implement to get all orders which accepted is false
+  } catch (error) {
+    next(error);
+  }
+};
 
-function getAllAcceptedOrders(req, res) {
-  // Implement to get all orders which accepted is true
-}
+const getAllAcceptedOrders = async (req, res, next) => {
+  try {
+    // Implement to get all orders which accepted is true
+  } catch (error) {
+    next(error);
+  }
+};
 
-function getOrderHistory(req, res) {
-  // Implement to get orders for a specific user
-}
+const getOrderHistory = async (req, res, next) => {
+  try {
+    // Implement to get orders for a specific user
+  } catch (error) {
+    next(error);
+  }
+};
 
-function getOrderById(req, res) {
-  // Implement logic to get an order by ID
-}
+const getOrderById = async (req, res, next) => {
+  try {
+    // Implement logic to get an order by ID
+  } catch (error) {
+    next(error);
+  }
+};
 
-function createOrder(req, res) {
-  // Implement to create an order
-}
+const createOrder = async (req, res, next) => {
+  try {
+    // Implement to create an order
+  } catch (error) {
+    next(error);
+  }
+};
 
-function updateOrder(req, res) {
-  // Implement logic to update an order
-}
+const updateOrder = async (req, res, next) => {
+  try {
+    // Implement logic to update an order
+  } catch (error) {
+    next(error);
+  }
+};
 
-function deleteOrder(req, res) {
-  // Implement logic to delete an order
-}
+const deleteOrder = async (req, res, next) => {
+  try {
+    // Implement logic to delete an order
+  } catch (error) {
+    next(error);
+  }
+};
 
+const acceptOrder = async (req, res, next) => {
+  try {
+    // Implement to accepting an order
+    // detect the total cost and make accepted true
+  } catch (error) {
+    next(error);
+  }
+};
 
-function acceptOrder(req, res) {
-  //  Implement to accepting an order
-  // detect the total cost and make accepted true
-}
+const denyOrder = async (req, res, next) => {
+  try {
+    // Implement to denying an order
+    // Delete this the order
+  } catch (error) {
+    next(error);
+  }
+};
 
-function denyOrder(req, res) {
-  // Implement to denying an order
-  // Delete this the order
-}
-
-function changeOrderStatus(req, res) {
-  // Implement to change the status of an order
-}
+const changeOrderStatus = async (req, res, next) => {
+  try {
+    // Implement to change the status of an order
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   getAllOrders,

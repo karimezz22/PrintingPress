@@ -1,3 +1,4 @@
+//models/product.js
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -35,8 +36,13 @@ const productSchema = new Schema({
     },
     choices: {
       type: [String]
-    }
-  }]
+    },
+    
+  }],
+  deleted: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 const ProductModel = mongoose.model("Product", productSchema);

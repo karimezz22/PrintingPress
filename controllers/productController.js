@@ -1,43 +1,68 @@
-// Controller for product management
+// controllers/productController.js
+const productModel = require("../models/product");
 
-function getAllProducts(req, res) {
-  // Implement to get all products
-}
+const getAllProducts = async (req, res, next) => {
+  try {
+    // Implement to get all products which deleted is false
+  } catch (error) {
+    next(error);
+  }
+};
 
-function getProductById(req, res) {
-  // Implement to get a product by ID
-}
+const getDeletedProducts = async (req, res, next) => {
+  try {
+    // Implement to get products which deleted is true
+  } catch (error) {
+    next(error);
+  }
+};
 
-function createProduct(req, res) {
-  // Implement to create product
-  // Validate user inputs
-  // Insert product information to the database
-  // Implement error handling to gracefully handle any errors that may occur during the product creation process.
-  // Return a response to the client indicating success
-}
+const getProductById = async (req, res, next) => {
+  try {
+    // Implement to get a product by ID
+  } catch (error) {
+    next(error);
+  }
+};
 
-function updateProduct(req, res) {
-  // Implement to update product
-  // Validate user inputs
-  // Update product information in the database
-  // Implement error handling to gracefully handle any errors that may occur during the product update process.
-  // Return a response to the client indicating success or failure
-}
+const createProduct = async (req, res, next) => {
+  try {
+    // Implement to create product
+    // Insert product information to the database
+  } catch (error) {
+    next(error);
+  }
+};
 
-function deleteProduct(req, res) {
-  // Implement to delete product
-  // Validate user inputs (e.g., product ID)
-  // Delete product from the database
-  // Implement error handling to gracefully handle any errors that may occur during the product deletion process.
-  // Return a response to the client indicating success or failure
-}
+const updateProduct = async (req, res, next) => {
+  try {
+    // Implement to update product
+    // Update product information in the database
+  } catch (error) {
+    next(error);
+  }
+};
 
-function searchProducts(req, res) {
-  // Implement to search for products
-}
+const deleteProduct = async (req, res, next) => {
+  try {
+    // Implement to delete product
+    // set deleted attribute true
+  } catch (error) {
+    next(error);
+  }
+};
+
+const searchProducts = async (req, res, next) => {
+  try {
+    // Implement to search for products
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   getAllProducts,
+  getDeletedProducts,
   getProductById,
   createProduct,
   updateProduct,

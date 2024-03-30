@@ -1,19 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/orderController');
-// const authenticate = require('../middleware/authentication');
-// const auth = require('../middleware/authorization');
+const { authenticated, isAdmin } = require('../middleware/auth')
 
 // Routes for order processing
-router.get('/', orderController.getAllOrders);
-router.get('/acceptedOrderd', orderController.getAllAcceptedOrders);
-router.get('/orderHistory', orderController.getOrderHistory);
-router.get('/:id', orderController.getOrderById);
-router.post('/create', orderController.createOrder);
-router.put('/:id', orderController.updateOrder);
-router.delete('/:id', orderController.deleteOrder);
-router.put('/:id/accept', orderController.acceptOrder);
-router.delete('/:id/deny', orderController.denyOrder);
-router.put('/:id/status', orderController.changeOrderStatus);
+router.get('/', authenticated, orderController.getAllOrders);
+router.get('/acceptedOrderd', authenticated, orderController.getAllAcceptedOrders);
+router.get('/orderHistory', authenticated, orderController.getOrderHistory);
+router.get('/:id', authenticated, orderController.getOrderById);
+router.post('/create', authenticated, orderController.createOrder);
+router.put('/:id', authenticated, orderController.updateOrder);
+router.delete('/:id', authenticated, orderController.deleteOrder);
+router.put('/:id/accept', isAdmin, orderController.acceptOrder);
+router.delete('/:id/deny', isAdmin, orderController.denyOrder);
+router.put('/:id/status', isAdmin, orderController.changeOrderStatus);
 
 module.exports = router;
