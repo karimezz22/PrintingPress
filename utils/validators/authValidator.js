@@ -1,4 +1,3 @@
-//utils/validators/authValidator.js
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middleware/validatorMiddleware");
 const User = require("../../models/user");
@@ -6,10 +5,12 @@ const User = require("../../models/user");
 exports.registerValidator = [
   check("username")
     .notEmpty().withMessage("Username required").bail()
+    .trim()
     .isLength({ min: 4 }).withMessage("Username must be at least 4 characters"),
 
   check("email")
     .notEmpty().withMessage("Email required").bail()
+    .trim()
     .isEmail().withMessage("Invalid email address")
     .custom(async (value, { req }) => {
       const user = await User.findOne({ email: value });
@@ -41,6 +42,7 @@ exports.registerValidator = [
 exports.loginValidator = [
   check("email")
     .notEmpty().withMessage("Email required").bail()
+    .trim()
     .isEmail().withMessage("Invalid email address"),
 
   check("password")

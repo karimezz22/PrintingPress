@@ -3,6 +3,7 @@ const UserModel = require("../models/user");
 const { comparePassword } = require("../models/dbMethods/userMethods");
 const { sendVerificationEmail, sendPasswordResetEmail } = require("../utils/email");
 const { generateToken, generateRandomToken } = require("../utils/token");
+const jwt = require("jsonwebtoken");
 
 const register = async (req, res, next) => {
   try {
@@ -10,24 +11,29 @@ const register = async (req, res, next) => {
 
     const verificationToken = generateRandomToken();
 
-    const user = await UserModel.create({
+    const newUser = await UserModel.create({
       username,
       password,
       email,
       phoneNumber,
-      verificationToken
+      verificationToken,
     });
 
-    await sendVerificationEmail(user.email, verificationToken);
+    if (!newUser) {
+      throw new Error("Failed to register user.");
+    }
+    const emailPromise = sendVerificationEmail(email, verificationToken);
+
+    await Promise.all([newUser, emailPromise]);
 
     res.status(201).json({
-      message: "User registered successfully. Please check your email for verification.",
+      message:
+        "User registered successfully. Please check your email for verification.",
     });
   } catch (error) {
     next(error);
   }
 };
-
 
 const verifyEmail = async (req, res, next) => {
   try {
@@ -49,7 +55,6 @@ const verifyEmail = async (req, res, next) => {
   }
 };
 
-
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -61,12 +66,10 @@ const login = async (req, res, next) => {
     }
 
     if (!user.emailVerified) {
-      return res
-        .status(401)
-        .json({
-          message:
-            "Email not verified. Please check your email for verification.",
-        });
+      return res.status(401).json({
+        message:
+          "Email not verified. Please check your email for verification.",
+      });
     }
 
     const isPasswordValid = await comparePassword(password, user.password);
@@ -85,7 +88,6 @@ const login = async (req, res, next) => {
   }
 };
 
-
 const logout = async (req, res, next) => {
   try {
     localStorage.removeItem("token");
@@ -95,7 +97,6 @@ const logout = async (req, res, next) => {
     next(error);
   }
 };
-
 
 const forgotPassword = async (req, res, next) => {
   try {
@@ -128,7 +129,6 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
-
 const resetPassword = async (req, res, next) => {
   try {
     const { token } = req.params;
@@ -150,6 +150,47 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+const protectRoute = async (req, res, next) => {
+  try {
+    // Extract token from headers
+    const token = req.headers.authorization;
+
+    // Check if token exists
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    // Check if the token is in the expected format
+    const tokenParts = token.split(" ");
+    if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
+      return res.status(401).json({ message: "Invalid token format." });
+    }
+
+    // Extract the JWT token
+    const jwtToken = tokenParts[1];
+
+    // Verify the token
+    const decodedToken = jwt.verify(jwtToken, process.env.JWT_SECRET);
+
+    // Extract userId from decoded token
+    const userId = decodedToken.userId;
+
+    // Check if user associated with token exists
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User associated with token does not exist." });
+    }
+
+    // Attach user object to request for further processing
+    req.user = user;
+
+    // Proceed to the next middleware or route handler
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Authentication failed." });
+  }
+};
+
 module.exports = {
   register,
   verifyEmail,
@@ -157,4 +198,5 @@ module.exports = {
   logout,
   forgotPassword,
   resetPassword,
+  protectRoute,
 };

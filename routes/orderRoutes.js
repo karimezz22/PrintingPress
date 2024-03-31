@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/orderController');
-const { authenticated, isAdmin } = require('../middleware/auth')
+const { authenticated, isAdmin } = require('../middleware/auth');
+const validatorMiddleware = require("../middleware/validatorMiddleware");
 
 // Routes for order processing
 router.get('/', authenticated, orderController.getAllOrders);

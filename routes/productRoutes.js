@@ -2,10 +2,12 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
-const {  authenticated, isAdmin } = require('../middleware/auth')
+const {  authenticated, isAdmin } = require('../middleware/auth');
+const validatorMiddleware = require("../middleware/validatorMiddleware");
+
 
 router.get('/', authenticated, productController.getAllProducts);
-router.get('/', isAdmin, productController.getDeletedProducts);
+router.get('/deletedProducts', isAdmin, productController.getDeletedProducts);
 router.get('/:id', authenticated, productController.getProductById);
 router.post('/create', isAdmin, productController.createProduct);
 router.put('/:id', isAdmin, productController.updateProduct);
