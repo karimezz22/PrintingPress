@@ -22,6 +22,7 @@ const getAllAcceptedOrders = async (req, res, next) => {
     next(error); // Pass any errors to the error handling middleware
   }
 };
+
 const getOrderHistory = async (req, res, next) => {
   try {
     // Assuming you have access to the user's ID from the request
@@ -35,6 +36,7 @@ const getOrderHistory = async (req, res, next) => {
     next(error); // Pass any errors to the error handling middleware
   }
 };
+
 const getOrderById = async (req, res, next) => {
   try {
     const orderId = req.params.id; // Assuming the order ID is passed as a parameter in the request URL

@@ -150,44 +150,35 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
-const protectRoute = async (req, res, next) => {
+const protected = async (req, res, next) => {
   try {
-    // Extract token from headers
     const token = req.headers.authorization;
 
-    // Check if token exists
     if (!token) {
       return res.status(401).json({ message: "No token provided." });
     }
 
-    // Check if the token is in the expected format
     const tokenParts = token.split(" ");
     if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
       return res.status(401).json({ message: "Invalid token format." });
     }
 
-    // Extract the JWT token
     const jwtToken = tokenParts[1];
 
-    // Verify the token
     const decodedToken = jwt.verify(jwtToken, process.env.JWT_SECRET);
 
-    // Extract userId from decoded token
     const userId = decodedToken.userId;
 
-    // Check if user associated with token exists
     const user = await UserModel.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User associated with token does not exist." });
     }
 
-    // Attach user object to request for further processing
     req.user = user;
 
-    // Proceed to the next middleware or route handler
-    next();
+    res.status(200).json({ message: "user is authinticated." });
   } catch (error) {
-    return res.status(401).json({ message: "Authentication failed." });
+    next(error);
   }
 };
 
@@ -198,5 +189,5 @@ module.exports = {
   logout,
   forgotPassword,
   resetPassword,
-  protectRoute,
+  protected,
 };
