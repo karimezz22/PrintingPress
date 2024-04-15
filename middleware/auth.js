@@ -1,6 +1,5 @@
 // middleware/auth.js
 const jwt = require('jsonwebtoken');
-const UserModel = require('../models/user');
 require('dotenv').config();
 
 
@@ -32,15 +31,32 @@ const authenticated = async (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
-  const token = req.headers.authorization.split(' ')[1];
+  try {
+    const token = req.headers.authorization;
+    
+    // Check if the Authorization header exists
+    if (!token) {
+      return res.status(403).json({ message: 'Forbidden: Admin access required.' });
+    }
 
-  const decodedToken = jwt.decode(token);
+    // Split the token and decode it
+    const tokenParts = token.split(' ');
+    if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+      return res.status(403).json({ message: 'Forbidden: Admin access required.' });
+    }
 
-  if (!decodedToken || !decodedToken.role || decodedToken.role !== 'admin') {
-    return res.status(403).json({ message: 'Forbidden: Admin access required.' });
+    const decodedToken = jwt.decode(tokenParts[1]);
+
+    if (!decodedToken || !decodedToken.role || decodedToken.role !== 'admin') {
+      return res.status(403).json({ message: 'Forbidden: Admin access required.' });
+    }
+
+    next();
+  } catch (error) {
+    console.error('Error in isAdmin middleware:', error);
+    return res.status(500).json({ message: 'Internal server error.' });
   }
-
-  next();
 };
+
 
 module.exports = {authenticated, isAdmin};

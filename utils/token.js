@@ -18,4 +18,8 @@ const generateRandomToken = () => {
   return crypto.randomBytes(20).toString('hex');
 };
 
-module.exports = { generateToken, generateRandomToken };
+const decodeToken = (token) => {
+  return jwt.verify(token, process.env.JWT_SECRET);
+};
+
+module.exports = { generateToken, generateRandomToken, decodeToken };

@@ -5,7 +5,11 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.name === 'ValidationError') {
     status = 400;
-    message = err.errors.map(error => error.msg).join(', ');
+    if (Array.isArray(err.errors)) {
+      message = err.errors.map(error => error.msg).join(', ');
+    } else {
+      message = err.message; // Use the original error message if err.errors is not an array
+    }
   }
 
   if (err.name === 'MongoError') {
@@ -15,9 +19,13 @@ const errorHandler = (err, req, res, next) => {
 
   console.error(err, err.stack);
   res.status(status).json({
-    message: err.message,
+    message: message,
     stack: process.env.NODE_ENV === 'development' ? err.stack : '🥞',
   });
 };
 
-module.exports = { errorHandler };
+const notFoundHandler = (req, res, next) => {
+  res.status(404).json({ message: 'Route not found.' });
+};
+
+module.exports = { errorHandler, notFoundHandler };

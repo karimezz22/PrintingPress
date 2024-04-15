@@ -4,188 +4,155 @@ const OrderModel = require("../models/order");
 const getAllOrders = async (req, res, next) => {
   try {
     const orders = await OrderModel.find({ accepted: false }).exec();
-    // Retrieve all orders where accepted is false
-
-    res.json(orders); // Send the retrieved orders as a JSON response
+    res.json(orders);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
 
 const getAllAcceptedOrders = async (req, res, next) => {
   try {
     const orders = await OrderModel.find({ accepted: true }).exec();
-    // Retrieve all orders where accepted is true
-
-    res.json(orders); // Send the retrieved orders as a JSON response
+    res.json(orders);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
 
 const getOrderHistory = async (req, res, next) => {
   try {
-    // Assuming you have access to the user's ID from the request
-    const userId = req.user._id; // Replace with the actual way to get the user ID from the request
-
-    // Query the OrderModel to find orders associated with the user
+    const userId = req.user._id;
     const orders = await OrderModel.find({ user_id: userId }).exec();
-
-    res.json(orders); // Send the retrieved orders as a JSON response
+    res.json(orders);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
 
 const getOrderById = async (req, res, next) => {
   try {
-    const orderId = req.params.id; // Assuming the order ID is passed as a parameter in the request URL
-
-    // Query the OrderModel to find the order by its ID
+    const orderId = req.params.id;
     const order = await OrderModel.findById(orderId).exec();
-
     if (!order) {
-      // If no order is found with the given ID, return a 404 error
       return res.status(404).json({ error: 'Order not found' });
     }
-
-    res.json(order); // Send the retrieved order as a JSON response
+    res.json(order);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
 
 const createOrder = async (req, res, next) => {
   try {
-    const { user_id, product, total_cost } = req.body; // Assuming required fields are passed in the request body
+    const { user_id, product_id, quantity, PDF, data } = req.body;
 
-    // Create a new order using the OrderModel
+    PDF = req.file.path;
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ error: 'PDF file is required' });
+    }
+
+    const product = {
+      product_id,
+      quantity,
+      PDF,
+      data
+    };
+
+    // Create the order with the product details
     const newOrder = await OrderModel.create({
       user_id,
-      product,
-      total_cost
-      // You may need to include other fields as well depending on your schema
-    });
+      product
+      });
 
-    res.status(201).json(newOrder); // Send the newly created order as a JSON response with status code 201 (Created)
+    res.status(201).json(newOrder);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
 
 const updateOrder = async (req, res, next) => {
   try {
-    const orderId = req.params.id; // Assuming the order ID is passed as a parameter in the request URL
-    const updateData = req.body; // Data to update, assuming it's passed in the request body
-
-    // Find and update the order by its ID
+    const orderId = req.params.id;
+    const updateData = req.body;
     const updatedOrder = await OrderModel.findOneAndUpdate(
-      { _id: orderId }, // Filter: find order by ID
-      updateData, // Data to update
-      { new: true } // Options: return the updated document
+      { _id: orderId },
+      updateData,
+      { new: true }
     ).exec();
-
     if (!updatedOrder) {
-      // If no order is found with the given ID, return a 404 error
       return res.status(404).json({ error: 'Order not found' });
     }
-
-    res.json(updatedOrder); // Send the updated order as a JSON response
+    res.json(updatedOrder);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
 
 const deleteOrder = async (req, res, next) => {
   try {
-    const orderId = req.params.id; // Assuming the order ID is passed as a parameter in the request URL
-
-    // Find and delete the order by its ID
+    const orderId = req.params.id;
     const deletedOrder = await OrderModel.findByIdAndDelete(orderId).exec();
-
     if (!deletedOrder) {
-      // If no order is found with the given ID, return a 404 error
       return res.status(404).json({ error: 'Order not found' });
     }
-
-    res.json(deletedOrder); // Send the deleted order as a JSON response
+    res.json(deletedOrder);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
 
 const acceptOrder = async (req, res, next) => {
   try {
-    const orderId = req.params.id; // Assuming the order ID is passed as a parameter in the request URL
-
-    // Find the order by its ID
+    const orderId = req.params.id;
+    const { totalCost } = req.body;
+    
     const order = await OrderModel.findById(orderId).exec();
-
     if (!order) {
-      // If no order is found with the given ID, return a 404 error
       return res.status(404).json({ error: 'Order not found' });
     }
-
-    // Calculate the total cost of the order
-    let totalCost = 0;
-    order.product.forEach(item => {
-      totalCost += item.quantity * item.unit_price;
-    });
-
-    // Update the order to set accepted to true and update total_cost
+    
+    if (!totalCost) {
+      return res.status(400).json({ error: 'Total cost is required' });
+    }
+    
     order.accepted = true;
     order.total_cost = totalCost;
     await order.save();
-
-    res.json(order); // Send the updated order as a JSON response
+    
+    res.json(order);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
 
-
 const denyOrder = async (req, res, next) => {
   try {
-    const orderId = req.params.id; // Assuming the order ID is passed as a parameter in the request URL
-
-    // Find and delete the order by its ID
+    const orderId = req.params.id;
     const deletedOrder = await OrderModel.findByIdAndDelete(orderId).exec();
-
     if (!deletedOrder) {
-      // If no order is found with the given ID, return a 404 error
       return res.status(404).json({ error: 'Order not found' });
     }
-
-    res.json(deletedOrder); // Send the deleted order as a JSON response
+    res.json(deletedOrder);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
 
 const changeOrderStatus = async (req, res, next) => {
   try {
-    const orderId = req.params.id; // Assuming the order ID is passed as a parameter in the request URL
-    const newStatus = req.body.status; // Assuming the new status is passed in the request body
-
-    // Find the order by its ID
+    const orderId = req.params.id;
+    const newStatus = req.body.status;
     const order = await OrderModel.findById(orderId).exec();
-
     if (!order) {
-      // If no order is found with the given ID, return a 404 error
       return res.status(404).json({ error: 'Order not found' });
     }
-
-    // Update the status of the order
     order.status = newStatus;
     await order.save();
-
-    res.json(order); // Send the updated order as a JSON response
+    res.json(order);
   } catch (error) {
-    next(error); // Pass any errors to the error handling middleware
+    next(error);
   }
 };
-
-
 
 module.exports = {
   getAllOrders,
@@ -199,3 +166,4 @@ module.exports = {
   denyOrder,
   changeOrderStatus
 };
+

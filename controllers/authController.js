@@ -90,7 +90,6 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    localStorage.removeItem("token");
 
     res.status(200).json({ message: "Logout successful." });
   } catch (error) {

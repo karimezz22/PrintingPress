@@ -21,7 +21,7 @@ const orderSchema = new Schema({
     },
     PDF: {
       type: String,
-      required: [true, "PDF link is required."]
+      required: [true, "PDF is required."]
     },
     data: [{
       field_name: {
@@ -44,7 +44,6 @@ const orderSchema = new Schema({
   },
   total_cost: {
     type: Number,
-    required: [true, "Total cost is required."],
     min: [0, "Total cost cannot be negative."]
   }
 }, { timestamps: true });

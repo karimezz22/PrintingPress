@@ -1,50 +1,57 @@
 //models/product.js
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const mongoosePaginate = require("mongoose-paginate-v2");
 
-const productSchema = new Schema({
-  name: {
-    type: String,
-    required: [true, "Product name is required."],
-    minlength: [2, "Product name must be at least 2 characters long."],
-    maxlength: [50, "Product name cannot exceed 50 characters."],
-    index: true
-  },
-  description: {
-    type: String,
-    required: [true, "Product description is required."]
-  },
-  image: {
-    type: String,
-    required: [true, "Product image is required."]
-  },
-  requiredData: [{
+const productSchema = new Schema(
+  {
     name: {
       type: String,
-      required: [true, "Required data name is required."]
+      required: [true, "Product name is required."],
+      minlength: [2, "Product name must be at least 2 characters long."],
+      maxlength: [50, "Product name cannot exceed 50 characters."],
+      index: { unique: true, dropDups: true },
     },
-    type: {
+    description: {
       type: String,
-      enum: {
-        values: ["text", "number", "dropdown"],
-        message: "Invalid data type."
+      required: [true, "Product description is required."],
+    },
+    image: {
+      type: String,
+      required: [true, "Product image is required."],
+    },
+    requiredData: [
+      {
+        name: {
+          type: String,
+          required: [true, "Required data name is required."],
+        },
+        type: {
+          type: String,
+          enum: {
+            values: ["text", "number", "choice"],
+            message: "Invalid data type.",
+          },
+          required: [true, "Type is required."],
+        },
+        required: {
+          type: Boolean,
+          default: false,
+        },
+        choices: {
+          type: [String],
+        },
       },
-      required: [true, "Type is required."]
-    },
-    required: {
+    ],
+    deleted: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    choices: {
-      type: [String]
-    },
-    
-  }],
-  deleted: {
-    type: Boolean,
-    default: false,
   },
-}, { timestamps: true });
+  { timestamps: true }
+);
+
+productSchema.plugin(mongoosePaginate);
 
 const ProductModel = mongoose.model("Product", productSchema);
 

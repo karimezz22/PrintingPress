@@ -1,10 +1,14 @@
-// controllers/productController.js
-const productModel = require("../models/product");
+const Product = require("../models/product");
 
 const createProduct = async (req, res, next) => {
   try {
-    // Implement to create product
-    // Insert product information to the database
+    const productData = req.body;
+
+    productData.image = req.file.path;
+
+    const product = new Product(productData);
+    const savedProduct = await product.save();
+    res.status(201).json({ message: "Product created successfully", data: savedProduct });
   } catch (error) {
     next(error);
   }
@@ -12,7 +16,8 @@ const createProduct = async (req, res, next) => {
 
 const getAllProducts = async (req, res, next) => {
   try {
-    // Implement to get all products which deleted is false
+    const products = await Product.find({ deleted: false });
+    res.json({ data: products });
   } catch (error) {
     next(error);
   }
@@ -20,7 +25,8 @@ const getAllProducts = async (req, res, next) => {
 
 const getDeletedProducts = async (req, res, next) => {
   try {
-    // Implement to get products which deleted is true
+    const deletedProducts = await Product.find({ deleted: true });
+    res.json({ data: deletedProducts });
   } catch (error) {
     next(error);
   }
@@ -28,26 +34,44 @@ const getDeletedProducts = async (req, res, next) => {
 
 const getProductById = async (req, res, next) => {
   try {
-    // Implement to get a product by ID
+    const productId = req.params.id;
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+    res.json({ data: product });
   } catch (error) {
     next(error);
   }
 };
 
-
 const updateProduct = async (req, res, next) => {
   try {
-    // Implement to update product
-    // Update product information in the database
+    const productId = req.params.id;
+    const productData = req.body;
+    const updatedProduct = await Product.findByIdAndUpdate(productId, productData, { new: true });
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.json({ message: "Product updated successfully", data: updatedProduct });
   } catch (error) {
     next(error);
   }
+};
+
+const toggleProductDeletedStatus = async (productId, deletedStatus, res) => {
+  const updatedProduct = await Product.findByIdAndUpdate(productId, { deleted: deletedStatus }, { new: true });
+  if (!updatedProduct) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+  return res.status(200).json({ message: "Product deleted status changed successfully" });
 };
 
 const deleteProduct = async (req, res, next) => {
   try {
-    // Implement to delete product
-    // set deleted attribute true
+    const productId = req.params.id;
+    await toggleProductDeletedStatus(productId, true, res);
   } catch (error) {
     next(error);
   }
@@ -55,8 +79,8 @@ const deleteProduct = async (req, res, next) => {
 
 const restoreProduct = async (req, res, next) => {
   try {
-    // Implement to delete product
-    // set deleted attribute false
+    const productId = req.params.id;
+    await toggleProductDeletedStatus(productId, false, res);
   } catch (error) {
     next(error);
   }
@@ -64,7 +88,9 @@ const restoreProduct = async (req, res, next) => {
 
 const searchProducts = async (req, res, next) => {
   try {
-    // Implement to search for products
+    const query = req.params.query;
+    const products = await Product.find({ $text: { $search: query } });
+    res.json({ data: products });
   } catch (error) {
     next(error);
   }
