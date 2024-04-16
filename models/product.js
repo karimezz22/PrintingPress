@@ -26,15 +26,11 @@ const productSchema = new Schema(
           type: String,
           required: [true, "Required data name is required."],
         },
-        type: {
-          type: String,
-          enum: {
-            values: ["text", "number", "choice"],
-            message: "Invalid data type.",
-          },
-          required: [true, "Type is required."],
-        },
         required: {
+          type: Boolean,
+          default: false,
+        },
+        hasChoices: {
           type: Boolean,
           default: false,
         },

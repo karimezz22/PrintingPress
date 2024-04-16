@@ -2,12 +2,18 @@ const Product = require("../models/product");
 
 const createProduct = async (req, res, next) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Please upload an image." });
+    }
+
     const productData = req.body;
 
     productData.image = req.file.path;
 
     const product = new Product(productData);
+
     const savedProduct = await product.save();
+
     res.status(201).json({ message: "Product created successfully", data: savedProduct });
   } catch (error) {
     next(error);
@@ -17,7 +23,7 @@ const createProduct = async (req, res, next) => {
 const getAllProducts = async (req, res, next) => {
   try {
     const products = await Product.find({ deleted: false });
-    res.json({ data: products });
+    res.status(200).json({ data: products });
   } catch (error) {
     next(error);
   }
@@ -26,7 +32,7 @@ const getAllProducts = async (req, res, next) => {
 const getDeletedProducts = async (req, res, next) => {
   try {
     const deletedProducts = await Product.find({ deleted: true });
-    res.json({ data: deletedProducts });
+    res.status(200).json({ data: deletedProducts });
   } catch (error) {
     next(error);
   }
@@ -39,7 +45,7 @@ const getProductById = async (req, res, next) => {
     if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
-    res.json({ data: product });
+    res.status(200).json({ data: product });
   } catch (error) {
     next(error);
   }
@@ -48,13 +54,18 @@ const getProductById = async (req, res, next) => {
 const updateProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
-    const productData = req.body;
+    let productData = req.body;
+
+    if (req.file && req.file.path) {
+      productData.image = req.file.path;
+    }
+
     const updatedProduct = await Product.findByIdAndUpdate(productId, productData, { new: true });
     if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    res.json({ message: "Product updated successfully", data: updatedProduct });
+    res.status(200).json({ message: "Product updated successfully" });
   } catch (error) {
     next(error);
   }
@@ -90,7 +101,7 @@ const searchProducts = async (req, res, next) => {
   try {
     const query = req.params.query;
     const products = await Product.find({ $text: { $search: query } });
-    res.json({ data: products });
+    res.status(200).json({ data: products });
   } catch (error) {
     next(error);
   }

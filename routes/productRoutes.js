@@ -12,7 +12,7 @@ router.post('/create', isAdmin, upload.single('image'), createProductValidator, 
 router.get('/', authenticated, paginateMiddleware(ProductModel), productController.getAllProducts);
 router.get('/deletedProducts', isAdmin, paginateMiddleware(ProductModel), productController.getDeletedProducts);
 router.get('/:id', authenticated, productController.getProductById);
-router.put('/:id', isAdmin, updateProductValidator, productController.updateProduct);
+router.put('/:id', isAdmin, upload.single('image'), updateProductValidator, productController.updateProduct);
 router.put('/delete/:id', isAdmin, productController.deleteProduct);
 router.put('/restore/:id', isAdmin, productController.restoreProduct);
 router.get('/search/:query', authenticated, paginateMiddleware(ProductModel), productController.searchProducts);

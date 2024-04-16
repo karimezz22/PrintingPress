@@ -33,13 +33,6 @@ const createProductValidator = [
     .notEmpty()
     .withMessage("Required data name is required."),
 
-  body("requiredData.*.type")
-    .trim()
-    .notEmpty()
-    .withMessage("Required data type is required.")
-    .isIn(["text", "number", "choice"])
-    .withMessage("Invalid data type."),
-
   validatorMiddleware
 ];
 
@@ -80,14 +73,6 @@ const updateProductValidator = [
     .trim()
     .notEmpty()
     .withMessage("Required data name is required."),
-
-  body("requiredData.*.type")
-    .optional()
-    .trim()
-    .notEmpty()
-    .withMessage("Required data type is required.")
-    .isIn(["text", "number", "choice"])
-    .withMessage("Invalid data type."),
 
   validatorMiddleware
 ];

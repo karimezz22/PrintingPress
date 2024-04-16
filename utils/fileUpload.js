@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
+    cb(null, uniqueSuffix + '.' + file.originalname.split('.').pop());
   }
 });
 
@@ -17,6 +17,7 @@ const fileFilter = (req, file, cb) => {
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
+    // Return error for invalid file type
     cb(new Error('Invalid file type.'));
   }
 };
