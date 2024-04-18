@@ -1,8 +1,7 @@
-// config/database.js
-import { createClient } from 'redis';
-import { promisify } from 'util';
+const { createClient } = require('redis');
+const { promisify } = require('util');
 
-const redisClient = createClient({
+const createRedisClient  = createClient({
     password: 'gzuROPdWSbI73PAM8ThEja0msLaH5rdF',
     host: 'redis-16540.c274.us-east-1-3.ec2.cloud.redislabs.com',
     port: 16540
@@ -16,8 +15,8 @@ redisClient.on('connect', () => {
   console.log('Connected to Redis server');
 });
 
-redisClient.on('error', (err) => {
+createRedisClient.on('error', (err) => {
   console.error('Redis error:', err);
 });
 
-export { redisClient, getAsync, setAsync };
+module.exports = { createRedisClient, getAsync, setAsync };

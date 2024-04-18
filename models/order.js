@@ -42,9 +42,13 @@ const orderSchema = new Schema({
     type: Boolean,
     default: false
   },
-  total_cost: {
-    type: Number,
-    min: [0, "Total cost cannot be negative."]
+  adminMessages: [{
+    type: String,
+    default: ''
+  }],
+  invoice: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'Invoice' 
   }
 }, { timestamps: true });
 

@@ -7,14 +7,13 @@ const createProduct = async (req, res, next) => {
     }
 
     const productData = req.body;
-
     productData.image = req.file.path;
 
     const product = new Product(productData);
 
-    const savedProduct = await product.save();
+    await product.save();
 
-    res.status(201).json({ message: "Product created successfully", data: savedProduct });
+    res.status(201).json({ message: "Product created successfully"});
   } catch (error) {
     next(error);
   }
@@ -22,7 +21,11 @@ const createProduct = async (req, res, next) => {
 
 const getAllProducts = async (req, res, next) => {
   try {
-    const products = await Product.find({ deleted: false });
+    const products = await Product.find({ deleted: false }).select('name description image');
+    if (!products || products.length === 0) {
+      return res.status(404).json({ success: false, message: "No Products not found" });
+    }
+       
     res.status(200).json({ data: products });
   } catch (error) {
     next(error);
@@ -31,7 +34,11 @@ const getAllProducts = async (req, res, next) => {
 
 const getDeletedProducts = async (req, res, next) => {
   try {
-    const deletedProducts = await Product.find({ deleted: true });
+    const deletedProducts = await Product.find({ deleted: true }).select('name description image');
+    if (!deletedProducts || deletedProducts.length === 0 ) {
+      return res.status(404).json({ success: false, message: "Not Deleted Products not found" });
+    }
+    
     res.status(200).json({ data: deletedProducts });
   } catch (error) {
     next(error);
@@ -61,6 +68,7 @@ const updateProduct = async (req, res, next) => {
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(productId, productData, { new: true });
+
     if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -71,18 +79,22 @@ const updateProduct = async (req, res, next) => {
   }
 };
 
-const toggleProductDeletedStatus = async (productId, deletedStatus, res) => {
+const toggleProductDeletedStatus = async (productId, deletedStatus) => {
   const updatedProduct = await Product.findByIdAndUpdate(productId, { deleted: deletedStatus }, { new: true });
+
   if (!updatedProduct) {
-    return res.status(404).json({ message: "Product not found" });
+    throw new Error("Product not found");
   }
-  return res.status(200).json({ message: "Product deleted status changed successfully" });
+
+  return updatedProduct;
 };
 
 const deleteProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
-    await toggleProductDeletedStatus(productId, true, res);
+    await toggleProductDeletedStatus(productId, true);
+
+    res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     next(error);
   }
@@ -91,7 +103,9 @@ const deleteProduct = async (req, res, next) => {
 const restoreProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
-    await toggleProductDeletedStatus(productId, false, res);
+    await toggleProductDeletedStatus(productId, false);
+
+    res.status(200).json({ message: "Product restored successfully" });
   } catch (error) {
     next(error);
   }
@@ -100,7 +114,13 @@ const restoreProduct = async (req, res, next) => {
 const searchProducts = async (req, res, next) => {
   try {
     const query = req.params.query;
-    const products = await Product.find({ $text: { $search: query } });
+    
+    const products = await Product.find({ $text: { $search: query } }).select('name description image');
+    
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: 'No products found for the given query.' });
+    }
+    
     res.status(200).json({ data: products });
   } catch (error) {
     next(error);
